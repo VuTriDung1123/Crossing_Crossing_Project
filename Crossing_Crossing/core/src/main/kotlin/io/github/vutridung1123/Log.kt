@@ -1,3 +1,4 @@
+// File: Log.kt
 package io.github.vutridung1123
 
 import com.badlogic.gdx.graphics.Color
@@ -9,29 +10,25 @@ import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute
 import com.badlogic.gdx.math.Vector3
 import com.badlogic.gdx.math.collision.BoundingBox
 
-class Car(model: Model, x: Float, z: Float, private val speed: Float) {
+class Log(model: Model, x: Float, z: Float, val speed: Float) {
     private val instance: ModelInstance = ModelInstance(model)
-    val position = Vector3(x, 0.5f, z)
+    val position = Vector3(x, 0.4f, z) // Gỗ thấp hơn bờ một chút (Y=0.4)
     private val bounds = BoundingBox()
+    val width = 3f // Giả sử khúc gỗ dài 3 đơn vị
 
     init {
         instance.transform.setToTranslation(position)
     }
 
-    // --- SỬA HÀM UPDATE: CẦN BIẾT VỊ TRÍ NGƯỜI CHƠI ---
     fun update(delta: Float, playerX: Float) {
         position.x += speed * delta
 
-        // Logic Vô Tận:
-        // Nếu xe chạy quá xa người chơi (vượt quá tầm nhìn 30m),
-        // cho nó "dịch chuyển tức thời" về phía bên kia để chạy lại.
-        // Tạo cảm giác xe cộ luôn đông đúc quanh bạn dù bạn đi tới đâu.
+        // Logic lặp lại vô tận giống xe
         if (speed > 0) {
             if (position.x > playerX + 35f) position.x = playerX - 35f
         } else {
             if (position.x < playerX - 35f) position.x = playerX + 35f
         }
-
         instance.transform.setToTranslation(position)
     }
 
@@ -39,10 +36,6 @@ class Car(model: Model, x: Float, z: Float, private val speed: Float) {
         instance.calculateBoundingBox(bounds)
         bounds.mul(instance.transform)
         return bounds.intersects(playerBounds)
-    }
-
-    fun setColor(color: Color) {
-        instance.materials.get(0).set(ColorAttribute.createDiffuse(color))
     }
 
     fun render(batch: ModelBatch, env: Environment) {
